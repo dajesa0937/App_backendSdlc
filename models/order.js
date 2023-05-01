@@ -5,13 +5,26 @@ const Order = {};
 Order.findByStatus = (status) => {
 
     const sql = `
-        SELECT 
+    SELECT 
         O.id,
         O.id_client,
         O.id_address,
         O.id_delivery,
         O.status,
         O.timestamp,
+		
+		JSON_AGG(
+			JSON_BUILD_OBJECT(
+				'id', P.id, 
+				'name', P.name, 
+				'description', P.description, 
+				'price', P.price, 
+				'image1', P.image1, 
+				'image2', P.image2, 
+				'image3', P.image3, 
+				'quantity', OHP.quantity
+			)
+		) AS products,
 
         JSON_BUILD_OBJECT(
             'id', U.id,
@@ -41,10 +54,22 @@ Order.findByStatus = (status) => {
 
         ON
             A.id = O.id_address
+	    INNER JOIN 
+			order_has_products AS OHP
+		ON
+		    OHP.id_order = O.id
+			
+		INNER JOIN
+		    products AS P
+		ON 
+			P.id = OHP.id_product
 
         WHERE
 
-            status = $1;
+            status = $1
+		GROUP BY 
+			O.id, U.id, A.id
+			;
 
     
     `;
