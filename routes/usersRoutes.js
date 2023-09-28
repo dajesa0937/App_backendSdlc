@@ -7,7 +7,7 @@ module.exports = (app, upload) => {
 
     app.get('/api/users/getAll', UsersController.getAll);
     app.get('/api/users/findById/:id', passport.authenticate('jwt', {session: false}), UsersController.findById);
-
+    app.get('/api/users/findDeliveryMen', passport.authenticate('jwt', {session: false}), UsersController.findDeliveryMen);
     // metodo post para  guardar los datos
     
     app.post('/api/users/create', upload.array('image', 1), UsersController.registerWithImage);
